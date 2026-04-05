@@ -29,121 +29,130 @@
 
 ---
 
-## 📌 Overview
+## Overview
 
 **CAPE LLM Assessment** is an optional reporting extension for **CAPE Sandbox** that enhances post-analysis intelligence through Large Language Models (LLMs).
 
 Instead of raw sandbox outputs, this module transforms CAPE analysis results into:
 
-- Structured threat assessments  
-- Extracted Indicators of Compromise (IOCs)  
-- ATT&CK-aligned behavioral insights  
-- Analyst-friendly JSON and Markdown reports  
+- Structured threat assessments
+- Extracted Indicators of Compromise (IOCs)
+- ATT&CK-aligned behavioral insights
+- Analyst-friendly JSON and Markdown reports
 
 The module operates **after CAPE analysis completes**, without modifying the sandbox execution pipeline.
 
 ---
 
-## 🧠 Key Capabilities
+## Key Capabilities
 
-### 🔍 Results Normalization & Denoising
-- Extracts high-value signals from CAPE results  
-- Removes redundant or noisy data  
-- Builds a compact, LLM-friendly evidence package  
+### Results Normalization & Denoising
+- Extracts high-value signals from CAPE results
+- Removes redundant or noisy data
+- Builds a compact, LLM-friendly evidence package
 
-### ⚙️ Heuristic Signal Detection
-- Detects suspicious behaviors (persistence, injection, LOLBins, etc.)  
-- Converts raw events into structured risk indicators  
+### Heuristic Signal Detection
+- Detects suspicious behaviors such as persistence, injection, and LOLBins usage
+- Converts raw events into structured risk indicators
 
-### 🧩 LLM-Based Reasoning
-- Uses OpenAI-compatible APIs  
-- Performs structured malware interpretation  
-- Reduces hallucination via schema-constrained outputs  
+### LLM-Based Reasoning
+- Uses OpenAI-compatible APIs
+- Performs structured malware interpretation
+- Reduces hallucination through schema-constrained outputs
 
-### 📊 Structured Output Generation
-- JSON output for automation pipelines  
-- Markdown output for human analysts  
-- Evidence-linked findings for traceability  
+### Structured Output Generation
+- JSON output for automation pipelines
+- Markdown output for human analysts
+- Evidence-linked findings for traceability
 
-### 🛡️ Secure-by-Design
-- Prompt injection mitigation  
-- Sample data sanitization and truncation  
-- Fail-open architecture (never breaks CAPE reporting)  
+### Secure-by-Design
+- Prompt injection mitigation
+- Sample data sanitization and truncation
+- Fail-open architecture that never breaks CAPE reporting
 
 ---
 
-## 🏗️ Architecture
+## Architecture
+
+~~~text
 CAPE Analysis Pipeline
-│
-▼
+        │
+        ▼
 ┌──────────────────────────────┐
-│ CAPE Results (raw JSON) │
+│ CAPE Results (raw JSON)      │
 └──────────────┬───────────────┘
-▼
+               ▼
 ┌──────────────────────────────┐
 │ Normalizer (denoise & reduce)│
 └──────────────┬───────────────┘
-▼
+               ▼
 ┌──────────────────────────────┐
-│ Heuristics Engine │
-│ (rule-based signals) │
+│ Heuristics Engine            │
+│ (rule-based signals)         │
 └──────────────┬───────────────┘
-▼
+               ▼
 ┌──────────────────────────────┐
-│ Prompt Builder │
+│ Prompt Builder               │
 └──────────────┬───────────────┘
-▼
+               ▼
 ┌──────────────────────────────┐
-│ LLM Client (OpenAI API) │
+│ LLM Client (OpenAI API)      │
 └──────────────┬───────────────┘
-▼
+               ▼
 ┌──────────────────────────────┐
-│ Postprocess & Schema Guard │
+│ Postprocess & Schema Guard   │
 └──────────────┬───────────────┘
-▼
+               ▼
 ┌──────────────────────────────┐
-│ Output │
-│ - llm_summary.json │
-│ - llm_summary.md │
+│ Output                       │
+│ - llm_summary.json           │
+│ - llm_summary.md             │
 └──────────────────────────────┘
+~~~
 
 ---
 
-## 📂 Project Structure
+## Project Structure
+
+~~~text
 CAPE-LLM-Assessment/
 ├── modules/
-│ └── reporting/
-│ └── llm_assessment.py
+│   └── reporting/
+│       └── llm_assessment.py
 ├── lib/
-│ └── cuckoo/
-│ └── common/
-│ └── llm/
-│ ├── client.py
-│ ├── normalizer.py
-│ ├── heuristics.py
-│ ├── prompt_builder.py
-│ ├── schema.py
-│ ├── postprocess.py
-│ └── utils.py
+│   └── cuckoo/
+│       └── common/
+│           └── llm/
+│               ├── client.py
+│               ├── normalizer.py
+│               ├── heuristics.py
+│               ├── prompt_builder.py
+│               ├── schema.py
+│               ├── postprocess.py
+│               └── utils.py
 ├── conf/
-│ └── default/
-│ └── reporting.conf.default
+│   └── default/
+│       └── reporting.conf.default
 ├── tests/
-│ └── test_llm_assessment.py
+│   └── test_llm_assessment.py
 └── docs/
-└── llm_assessment.md
+    └── llm_assessment.md
+~~~
 
 ---
 
-## ⚙️ Installation & Integration
+## Installation & Integration
 
 ### 1. Copy Files into CAPE
 
-```bash
+~~~bash
 cp -r modules/reporting/* <CAPE>/modules/reporting/
 cp -r lib/cuckoo/common/llm <CAPE>/lib/cuckoo/common/
+~~~
 
 ### 2. Update CAPE Configuration
+
+~~~ini
 [llm_assessment]
 enabled = yes
 provider = openai_compatible
@@ -157,10 +166,117 @@ max_tokens = 2200
 store_markdown = yes
 attach_to_results = no
 system_prompt_version = v1
+~~~
+
 ### 3. Start LLM Service
+
+~~~bash
 curl http://127.0.0.1:8001/v1/chat/completions
+~~~
+
 ### 4. Run CAPE Analysis
+
 Outputs will be generated in:
+
+~~~text
 storage/analyses/<task_id>/reports/
-llm_summary.json
-llm_summary.md
+~~~
+
+- `llm_summary.json`
+- `llm_summary.md`
+
+---
+
+## Output Format
+
+### JSON (Machine-Friendly)
+- Verdict (malicious + confidence)
+- Observed behaviors
+- ATT&CK techniques
+- IOC list
+- Analyst actions
+- Uncertainty notes
+
+### Markdown (Human-Friendly)
+- Executive summary
+- Attack flow
+- Key findings
+- Threat intelligence insights
+- Recommended actions
+
+---
+
+## Testing
+
+~~~bash
+pytest -q tests/test_llm_assessment.py
+~~~
+
+---
+
+## Security Considerations
+
+- Sample-derived content is **untrusted input**
+- Prompt injection is mitigated via sanitization
+- Avoid sending sensitive data to public LLM APIs
+- Prefer local or private OpenAI-compatible endpoints
+
+---
+
+## Failure Handling
+
+This module follows a **fail-open design**:
+
+- LLM failures do **not** interrupt CAPE reporting
+- Errors are captured as structured JSON
+- Partial outputs remain available
+
+---
+
+## Use Cases
+
+- Malware triage automation
+- SOC analyst augmentation
+- Threat intelligence reporting
+- Incident response acceleration
+- Security research workflows
+
+---
+
+## Roadmap
+
+- [ ] Improved ATT&CK mapping accuracy
+- [ ] Multi-model support
+- [ ] Streaming report generation
+- [ ] CAPE Web UI integration
+- [ ] Threat clustering and similarity analysis
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Add tests
+4. Ensure all tests pass
+5. Submit a pull request
+
+---
+
+## License
+
+MIT License
+
+---
+
+## Author
+
+**Anchor Cao**  
+
+---
+
+## Acknowledgements
+
+- CAPE Sandbox
+- OpenAI-compatible LLM ecosystems
+- Malware analysis community
