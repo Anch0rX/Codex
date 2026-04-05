@@ -1,58 +1,75 @@
-# CAPE LLM Assessment Extension
+<p align="center">
+  <img src="assets/CAPE%20LLM%20Assessment.png" width="260" alt="CAPE LLM Assessment Logo" />
+</p>
 
-这个仓库提供一个可选的 CAPE reporting 扩展：`llm_assessment`。
-它在 CAPE 分析结束后执行“规则预处理 + LLM 研判 + 结构化落盘”，输出统一 JSON 与 Markdown 结果。
+<h1 align="center">CAPE LLM Assessment</h1>
 
-## 功能概览
+<p align="center">
+  An LLM-enhanced CAPE Sandbox reporting extension for structured malware assessment,
+  IOC extraction, ATT&CK-aligned findings, and analyst-ready threat intelligence reports.
+</p>
 
-- 新 reporting module：`modules/reporting/llm_assessment.py`
-- 结果归一化与去噪：`lib/cuckoo/common/llm/normalizer.py`
-- 规则信号检测：`lib/cuckoo/common/llm/heuristics.py`
-- Prompt 构造：`lib/cuckoo/common/llm/prompt_builder.py`
-- OpenAI-compatible client：`lib/cuckoo/common/llm/client.py`
-- Schema 兜底与稳态化：`lib/cuckoo/common/llm/schema.py`
-- 后处理与 Markdown 渲染：`lib/cuckoo/common/llm/postprocess.py`
+<p align="center">
+  <img src="https://img.shields.io/badge/CAPE-Sandbox-2563EB?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Language-Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/LLM-OpenAI%20Compatible-10B981?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Output-JSON%20%2B%20Markdown-F59E0B?style=for-the-badge" />
+</p>
 
-## 如何与 CAPE 一起使用
+<p align="center">
+  <img src="https://img.shields.io/badge/Detection-IOC%20Extraction-8B5CF6?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Mapping-MITRE%20ATT%26CK-DC2626?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Design-Fail--Open-111827?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Architecture-Modular-0EA5E9?style=for-the-badge" />
+</p>
 
-1. 将仓库中的 `modules/reporting/` 与 `lib/cuckoo/common/llm/` 对应文件放入 CAPE 主仓同路径。  
-2. 在 CAPE reporting 配置中加入（或合并）`[llm_assessment]` 配置段。  
-3. 将 `enabled = yes`，并配置你的 OpenAI-compatible endpoint。  
-4. 运行 CAPE 任务，查看输出文件：
-   - `reports/llm_summary.json`
-   - `reports/llm_summary.md`
+<p align="center">
+  <b>Results Normalization</b> • <b>Rule-Based Signals</b> • <b>LLM Reasoning</b> • <b>Stable Schema</b> • <b>Analyst Reports</b>
+</p>
 
-## 配置示例
+---
 
-```ini
-[llm_assessment]
-enabled = yes
-provider = openai_compatible
-endpoint = http://127.0.0.1:8001/v1/chat/completions
-api_key =
-model = qwen2.5-72b-instruct
-timeout = 120
-verify_tls = yes
-max_input_events = 80
-max_processes = 20
-max_signatures = 50
-max_network_artifacts = 50
-redact_pii = yes
-temperature = 0
-max_tokens = 2200
-store_markdown = yes
-attach_to_results = no
-system_prompt_version = v1
-```
+## 📌 Overview
 
-## 安全与运维建议
+**CAPE LLM Assessment** is an optional reporting extension for **CAPE Sandbox** that enhances post-analysis intelligence through Large Language Models (LLMs).
 
-- 默认建议使用本地/私有模型服务，不要默认发往公网 LLM。
-- 样本字符串是不可信输入，模块已做清洗/截断，但不代表零风险。
-- 模块为 fail-open 设计：LLM 异常不会中断主 reporting。
+Instead of raw sandbox outputs, this module transforms CAPE analysis results into:
 
-## 测试
+- Structured threat assessments  
+- Extracted Indicators of Compromise (IOCs)  
+- ATT&CK-aligned behavioral insights  
+- Analyst-friendly JSON and Markdown reports  
 
-```bash
-pytest -q tests/test_llm_assessment.py
-```
+The module operates **after CAPE analysis completes**, without modifying the sandbox execution pipeline.
+
+---
+
+## 🧠 Key Capabilities
+
+### 🔍 Results Normalization & Denoising
+- Extracts high-value signals from CAPE results  
+- Removes redundant or noisy data  
+- Builds a compact, LLM-friendly evidence package  
+
+### ⚙️ Heuristic Signal Detection
+- Detects suspicious behaviors (persistence, injection, LOLBins, etc.)  
+- Converts raw events into structured risk indicators  
+
+### 🧩 LLM-Based Reasoning
+- Uses OpenAI-compatible APIs  
+- Performs structured malware interpretation  
+- Reduces hallucination via schema-constrained outputs  
+
+### 📊 Structured Output Generation
+- JSON output for automation pipelines  
+- Markdown output for human analysts  
+- Evidence-linked findings for traceability  
+
+### 🛡️ Secure-by-Design
+- Prompt injection mitigation  
+- Sample data sanitization and truncation  
+- Fail-open architecture (never breaks CAPE reporting)  
+
+---
+
+## 🏗️ Architecture
