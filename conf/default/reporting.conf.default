@@ -1,0 +1,33 @@
+[llm_assessment]
+# Enable/disable module. Disabled by default to avoid accidental data exfiltration.
+enabled = no
+
+# Provider type. Currently only openai_compatible is implemented.
+provider = openai_compatible
+
+# OpenAI-compatible chat completion endpoint.
+endpoint = http://127.0.0.1:8001/v1/chat/completions
+
+# Optional API key (keep empty for local trusted services).
+api_key =
+
+# Remote model name passed to provider.
+model = qwen2.5-72b-instruct
+
+# Network and generation controls.
+timeout = 120
+verify_tls = yes
+temperature = 0
+max_tokens = 2200
+
+# Prompt data shaping limits.
+max_input_events = 80
+max_processes = 20
+max_signatures = 50
+max_network_artifacts = 50
+redact_pii = yes
+
+# Output controls.
+store_markdown = yes
+attach_to_results = no
+system_prompt_version = v1
